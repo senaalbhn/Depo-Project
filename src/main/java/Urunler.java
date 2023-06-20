@@ -10,12 +10,12 @@ public class Urunler {
       raf (6 adet fields mevcut)
      */
 
-    private int id;
+    private int id= 1000;
     private String urunIsmi;
     private String uretici;
-    private double miktar;
+    private double miktar=0;
     private String birim;
-    private String raf;
+    private String raf="-";
 
     public int getId() {
         return id;
