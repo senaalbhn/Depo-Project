@@ -18,7 +18,6 @@ public class Methodlar extends Urunler {
      */
     Scanner scan = new Scanner(System.in);
     Urunler pojo = new Urunler();
-    String  menuSecim;
     List<String> urunIsmiList = new ArrayList<>();
     List<String> ureticiList = new ArrayList<>();
     List<String> birimList = new ArrayList<>();
@@ -80,7 +79,22 @@ public class Methodlar extends Urunler {
     public void urunGirisi() {
         urunListeleCagir();
         System.out.println("Lutfen listeden eklemek istediginiz urunun id'sini giriniz");
-        int urunId=scan.nextInt();
+        Integer urunId=scan.nextInt();
+        String str=urunId.toString();
+        System.out.println("str = " + str);
+        Character urunIdSt=String.valueOf(urunId).charAt(0);
+        System.out.println("urunIdSt = " + urunIdSt);
+        char charAscii=(char)urunIdSt;
+        int ascii=(int)urunIdSt;
+        System.out.println("ascii = " + ascii);
+        if (urunIdSt>9){
+            System.out.println("Gecersiz id girdiniz, lutfen gecerli bir id girisi yapiniz");
+            urunGirisi();
+        }
+        if (urunId>pojo.getId()||urunId<1000){
+            System.out.println("Gecersiz id girdiniz, lutfen gecerli bir id girisi yapiniz");
+            urunGirisi();
+        }
         int urunIndex=idList.indexOf(urunId);
         rafaKoy(urunIndex);
         System.out.println(urunIsmiList.get(urunIndex)+ " miktarini giriniz.");
@@ -100,6 +114,10 @@ public class Methodlar extends Urunler {
         urunListeleCagir();
         System.out.print("Lutfen listeye gore cikis yapacaganiz urunun id'sini giriniz:");
         int urunId=scan.nextInt();
+        if (urunId>pojo.getId()||urunId<1000){
+            System.out.println("Gecersiz id girdiniz, lutfen gecerli bir id girisi yapiniz");
+            urunCikisi();
+        }
         int urunIndex=idList.indexOf(urunId);
         System.out.print("Cikis yapacaginiz urun " + urunIsmiList.get(urunIndex) + " . Cikis miktarini giriniz:");
         double urunMiktari=scan.nextDouble();
@@ -120,6 +138,7 @@ public class Methodlar extends Urunler {
         System.out.println("Sistemden cikis yaptiniz.");
     }
     public void menu() {
+        String  menuSecim;
         System.out.println("     ANA MENU");
         System.out.println("========================");
         System.out.println("Urun Tanimlama   => 1");
@@ -140,7 +159,15 @@ public class Methodlar extends Urunler {
                 urunGirisi();
                 break;
             case "4":
+                double toplam=0;
+                for (double w:miktarList) {
+                    toplam = toplam+w;
+                }if (toplam==0){
+                System.out.println("Henuz urun girisi yapilmamistir. Lutfen urun girisi yapiniz.");
+                menuSor();
+            }else {
                 urunCikisi();
+            }
                 break;
             case "5":
                 menuCikis();
@@ -162,3 +189,13 @@ public class Methodlar extends Urunler {
         pojo.setId(maxId+1);
     }
 }
+
+
+
+
+
+
+
+
+
+
