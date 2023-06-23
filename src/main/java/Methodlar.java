@@ -1,29 +1,19 @@
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-public class Methodlar extends Urunler {
-    /*
-    2-) methodlar olusturacagiz.
-     *      urunTanimlama   ==>  urunun ismi, ureticisi ve birimi girilecek. id  alınacak.  //MAP<id,pojoUrun>   RAF="-"ve Miktar=0 //arraylist
-     *
-     *      urunListele     ==> tanimlanan urunler listelenecek. urunun adeti ve raf numarasi tanimlama yapilmadiysa default deger gorunsun.
-     *     ///  printf(%10)
-     *      urunGirisi      ==> giris yapmak istedigimiz urnunun id numarasi ile girecegiz.
-     *
-     *      urunuRafaKoy    ==> listeden urunu sececegiz ve id numarasina gore urunu rafa koyacagiz.
-     *
-     *      urunCikisi      ==> listeden urunu sececegiz ve urunun cikis yapcagiz. burada urun listesinden sadece miktarda degisiklik yapilacak.
-     *                          urun adedi 0dan az olamaz. 0 olunca urun tanimlamasi silinmesin. sadece miktari 0 olsun.  ///exception
-     *      ===> yaptigimiz tum degisiklikler listede de gorunsun.
-     */
+public class Methodlar extends Urunler{
     Scanner scan = new Scanner(System.in);
-    Urunler pojo = new Urunler();
     List<String> urunIsmiList = new ArrayList<>();
     List<String> ureticiList = new ArrayList<>();
     List<String> birimList = new ArrayList<>();
     List<Double> miktarList = new ArrayList<>();
     List<Integer> idList = new ArrayList<>();
     List<String> rafList = new ArrayList<>();
+    int urunIndex;
+    String stringId;
+    int urunId;
     public void menuSor(){
         System.out.println("Ana menu icin =====> A   Cikmak icin =====> Q giriniz");
         char ch = scan.next().toUpperCase().charAt(0);
@@ -32,29 +22,30 @@ public class Methodlar extends Urunler {
         }else if (ch=='Q'){
             menuCikis();
         }else {
-            System.out.println("Gecersiz giris yaptiniz. Lutfen tekrar deneyiniz.");
+            System.out.println("\u001B[31mGecersiz giris yaptiniz. Lutfen tekrar deneyiniz.\u001B[0m");
             menuSor();
         }
     }
     public void urunTanimla() {
+        System.out.println("Urun Tanimla  ==>");
         System.out.print("Urun ismini giriniz: ");
-        pojo.setUrunIsmi(scan.next());
-        urunIsmiList.add(pojo.getUrunIsmi());
-        idList.add(pojo.getId());
-        pojo.setId(pojo.getId() + 1);
+        setUrunIsmi(scan.next());
+        urunIsmiList.add(getUrunIsmi());
+        idList.add(getId());
+        setId(getId() + 1);
         System.out.print("Lutfen uretici adini giriniz: ");
-        pojo.setUretici(scan.next());
-        ureticiList.add(pojo.getUretici());
+        setUretici(scan.next());
+        ureticiList.add(getUretici());
         birimsec();
-        miktarList.add(pojo.getMiktar());
-        rafList.add(pojo.getRaf());
+        miktarList.add(getMiktar());
+        rafList.add(getRaf());
         urunListeleCagir();
         menuSor();
     }
     private void birimsec() {
         System.out.print("Lutfen urunun birimini giriniz: ");
-        pojo.setBirim(scan.next());
-        birimList.add(pojo.getBirim());
+        setBirim(scan.next());
+        birimList.add(getBirim());
     }
     public void urunListele() {
         System.out.println("Urun Listele ==>");
@@ -67,7 +58,6 @@ public class Methodlar extends Urunler {
         } menuSor();
     }
     public void urunListeleCagir() {
-        System.out.println("Urun Listele ==>");
         System.out.println("  Id     Urun Adi    Uretici    Miktar     Birim      Raf");
         System.out.println("------  ----------  ---------  --------   -------    -----");
         for (int i = 0; i < urunIsmiList.size(); i++) {
@@ -78,28 +68,13 @@ public class Methodlar extends Urunler {
     }
     public void urunGirisi() {
         urunListeleCagir();
-        System.out.println("Lutfen listeden eklemek istediginiz urunun id'sini giriniz");
-        Integer urunId=scan.nextInt();
-        String str=urunId.toString();
-        System.out.println("str = " + str);
-        Character urunIdSt=String.valueOf(urunId).charAt(0);
-        System.out.println("urunIdSt = " + urunIdSt);
-        char charAscii=(char)urunIdSt;
-        int ascii=(int)urunIdSt;
-        System.out.println("ascii = " + ascii);
-        if (urunIdSt>9){
-            System.out.println("Gecersiz id girdiniz, lutfen gecerli bir id girisi yapiniz");
-            urunGirisi();
-        }
-        if (urunId>pojo.getId()||urunId<1000){
-            System.out.println("Gecersiz id girdiniz, lutfen gecerli bir id girisi yapiniz");
-            urunGirisi();
-        }
-        int urunIndex=idList.indexOf(urunId);
+        System.out.println("Urun Girisi  ==>");
+        idKontrol();
         rafaKoy(urunIndex);
-        System.out.println(urunIsmiList.get(urunIndex)+ " miktarini giriniz.");
+        System.out.print("Giris yapacaginiz '" +urunIsmiList.get(urunIndex)+ "' miktarini giriniz :");
         double urunMiktari=scan.nextDouble();
         miktarList.set(urunIndex,miktarList.get(urunIndex)+urunMiktari);
+        System.out.println("Urun Girisi  ==> Id: "+idList.get(urunIndex)+"  Urun Miktari: "+urunMiktari);
         urunListeleCagir();
         menuSor();
     }
@@ -110,32 +85,50 @@ public class Methodlar extends Urunler {
             rafList.set(urunIndex,raf);
         }
     }
+    public int idKontrol(){
+        System.out.print("Listeye gore islem yapmak istediginiz Urunun Id'sini giriniz : ");
+        stringId= scan.next();
+        char charId=stringId.charAt(0);
+        if((int)charId<49 || (int)charId>57){
+            System.out.println("\u001B[31mHatalı giriş! Lutfen listeye gore bir ID deger giriniz.\u001B[0m");
+            urunListeleCagir();
+            idKontrol();
+        }else {
+            urunId=Integer.parseInt(stringId);
+            if(urunId>getId()-1 || urunId<1000){
+                System.out.println("\u001B[31mHatalı giriş! Lutfen listeye gore bir ID deger giriniz.\u001B[0m");
+                urunListeleCagir();
+                idKontrol();
+            }else{
+                urunIndex =idList.indexOf(urunId) ;
+            }
+        }
+        return urunIndex;
+    }
     public void urunCikisi() {
         urunListeleCagir();
-        System.out.print("Lutfen listeye gore cikis yapacaganiz urunun id'sini giriniz:");
-        int urunId=scan.nextInt();
-        if (urunId>pojo.getId()||urunId<1000){
-            System.out.println("Gecersiz id girdiniz, lutfen gecerli bir id girisi yapiniz");
-            urunCikisi();
-        }
-        int urunIndex=idList.indexOf(urunId);
-        System.out.print("Cikis yapacaginiz urun " + urunIsmiList.get(urunIndex) + " . Cikis miktarini giriniz:");
+        System.out.println("Urun Cikisi  ==>");
+        idKontrol();
+        System.out.print("Cikis yapacaginiz '" + urunIsmiList.get(urunIndex) + "' miktarini giriniz:");
         double urunMiktari=scan.nextDouble();
         if (urunMiktari<=miktarList.get(urunIndex)){
             miktarList.set(urunIndex, miktarList.get(urunIndex)-urunMiktari);
+            System.out.println("Urun Cikisi  ==> Id: "+idList.get(urunIndex)+"  Urun Miktari: "+urunMiktari);
             if (miktarList.get(urunIndex)==0.00){
-                rafList.set(urunIndex, pojo.getRaf());
+                rafList.set(urunIndex, getRaf());
                 System.out.println("Stokta " + urunIsmiList.get(urunIndex) + " kalmamistir");
             }
             urunListeleCagir();
         }else {
-            System.out.println("Cikis yapacaginiz miktar stoktan fazla olamaz!");
+            System.out.println("\u001B[31mCikis yapacaginiz miktar stoktan fazla olamaz!\u001B[0m");
             urunCikisi();
         }
         menuSor();
     }
     public void menuCikis() {
-        System.out.println("Sistemden cikis yaptiniz.");
+        System.out.println("Listenin son durumu  ==>");
+        urunListeleCagir();
+        String test="Sistemden cikis yaptiniz.";
     }
     public void menu() {
         String  menuSecim;
@@ -145,7 +138,8 @@ public class Methodlar extends Urunler {
         System.out.println("Urun Listeleme   => 2");
         System.out.println("Urun Girisi      => 3");
         System.out.println("Urun Cikisi      => 4");
-        System.out.println("Menu Cikisi      => 5");
+        System.out.println("Urun Sil         => 5");
+        System.out.println("Menu Cikisi      => 6");
         System.out.print("Lutfen seciminizi giriniz:");
         menuSecim = scan.next().substring(0,1);
         switch (menuSecim) {
@@ -163,18 +157,44 @@ public class Methodlar extends Urunler {
                 for (double w:miktarList) {
                     toplam = toplam+w;
                 }if (toplam==0){
-                System.out.println("Henuz urun girisi yapilmamistir. Lutfen urun girisi yapiniz.");
+                System.out.println("\u001B[31mUyari! Henuz urun girisi yapilmamistir. Lutfen urun girisi yapiniz.\u001B[0m");
                 menuSor();
             }else {
                 urunCikisi();
             }
                 break;
             case "5":
+                urunSil();
+                break;
+            case "6":
                 menuCikis();
                 break;
             default:
-                System.out.println("Yanlis giris yaptiniz.Lutfen gecerli secim yapiniz");
+                System.out.println("\u001B[31mHatali Giris! Lutfen gecerli giris yapiniz.\u001B[0m");
                 menu(); }
+    }
+    private void urunSil() {
+        urunListeleCagir();
+        System.out.println("Urun Sil   ==>");
+        idKontrol();
+        System.out.print("Tanim listesinden '" + urunIsmiList.get(urunIndex) + "' silinecektir. ");
+        System.out.println("Onaylamak icin 'E', iptal etmek icin 'H' giriniz.");
+        String onay=scan.next().toUpperCase().substring(0,1);
+        if(onay.equals("H")){
+            menuSor();
+        }else {
+            if(rafList.get(urunIndex)=="-"){
+                urunIsmiList.set(urunIndex,"-");
+                ureticiList.set(urunIndex,"-");
+                birimList.set(urunIndex,"-");
+                urunListeleCagir();
+                menuSor();
+            }else{
+                System.out.println("\u001B[31mUyari! Stokta " + urunIsmiList.get(urunIndex) +" bulunmaktadir. Oncelikle stokta urun bulunmamalidir. \u001B[0m");
+                urunListeleCagir();
+                menuSor();
+            }
+        }
     }
     public void hazirTanimliUrunler(){
         idList.add(1000);   urunIsmiList.add("Un"); ureticiList.add("Telli"); miktarList.add(0.0);birimList.add("Cuval");rafList.add("-");
@@ -182,11 +202,11 @@ public class Methodlar extends Urunler {
         idList.add(1002);   urunIsmiList.add("Cay"); ureticiList.add("Rize"); miktarList.add(0.0);birimList.add("Paket");rafList.add("-");
         idList.add(1003);   urunIsmiList.add("Peynir"); ureticiList.add("Sutas"); miktarList.add(0.0);birimList.add("Teneke");rafList.add("-");
         idList.add(1004);   urunIsmiList.add("Zeytin"); ureticiList.add("Marin"); miktarList.add(0.0);birimList.add("Bidon");rafList.add("-");
-        int maxId= pojo.getId();
+        int maxId= getId();
         for(Integer w: idList){
             maxId = Math.max(w, maxId);
         }
-        pojo.setId(maxId+1);
+        setId(maxId+1);
     }
 }
 
